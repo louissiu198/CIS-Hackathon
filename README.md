@@ -1,4 +1,6 @@
 # CIS-Hackathon
+### Progress
+70%
 ### To Do
 0. js to connect html to backend
 1. debug if backend of recognition is working or no
