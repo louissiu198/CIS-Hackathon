@@ -12,3 +12,9 @@
 2. ./pages/ -> html
 3. ./static/ -> resources
 4. ./libraries/ -> recognition, scraping
+### Endpoints
+1. / or /index
+2. /history // not done
+3. /api/upload - checking photos
+4. /api/info - return json of all sustainable ideas // not done
+
