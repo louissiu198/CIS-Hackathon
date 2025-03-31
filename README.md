@@ -13,6 +13,7 @@
 3. ./static/ -> resources
 4. ./libraries/ -> recognition, scraping
 ### Endpoints
+Port: 1234
 1. / or /index
 2. /history // not done
 3. /api/upload - checking photos
