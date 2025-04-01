@@ -12,17 +12,19 @@ from fastapi import (
     Response,
     status,
 )
+from libraries.solver import Solver
 from libraries.scraping import Scraping
 from libraries.recognition import Recognition
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 reco_cli = Recognition()
+solve_cli = Solver()
 templates = Jinja2Templates(directory="pages")
 
 
-class Image(BaseModel): # use byte fuck
-    image_data: bytes # i patch this myself, json not required, use form data instead 
+class Image(BaseModel):  
+    image_data: bytes # i patched this, json not required, use form data instead 
 
 # app.add_middleware( # forgot when i added this
 #     CORSMiddleware,
@@ -31,7 +33,6 @@ class Image(BaseModel): # use byte fuck
 #     # allow_method = ["*"],
 #     allow_headers = ["*"],
 # )
-            # return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER) 
 
 async def response_json(status: str = "success", response: str = "", data: dict = {}) -> dict:
     return {
@@ -46,22 +47,38 @@ async def index_page(request: Request):
         request=request, name="index.html"
     )
 
-@app.get("/api/upload")
-async def upload_image(image: UploadFile = File(...)) -> HTMLResponse:
+@app.post("/api/upload")
+async def upload_image(image: UploadFile = File(...)) -> object:
+    # status_code=status.HTTP_303_SEE_OTHER
     try:
         image_byte = await image.read()
         data = reco_cli.analyse_image(image_byte)
-        return response_json(
+        return await response_json(
             "success",
             data = data
         )
-
-            # if user_cli.check_db_item("token", authorization): 
-            #     return templates.TemplateResponse(
-            #         request=request, name="lobby.html"
-            #     )
     except Exception as e:
-        return response_json(
+        return await response_json(
+            "error",
+            "Exception: " + str(e)
+        )
+    
+@app.get("/api/solve")
+async def solve_captcha() -> object:
+    global reco_cli
+    try:
+        token = True
+        while token == True: # come out the loop when it's a string / none
+            id = solve_cli.create_task()
+            token = solve_cli.get_task_result(id)
+
+        reco_cli.captcha_token = token
+        return await response_json(
+            "success",
+            data = token
+        )
+    except Exception as e:
+        return await response_json(
             "error",
             "Exception: " + str(e)
         )
