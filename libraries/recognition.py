@@ -1,13 +1,15 @@
 from tls_client import Session # google blocked non-tls 
 from base64 import b64encode
 from httpx import get # fastest client
+from time import time
 
 class Recognition:
     def __init__(self, client: Session = Session("chrome_131")): # don't change tls
         self.client = client 
-        self.captcha_token = "03AFcWeA41EELIwMcrLP8erdEIwYkkCIcBeq2HeC1wEIg5vSHPAgsW56Q1yK76hiuwVxcP01IvRhX1Pz61IyucxScKZ1sgtFHv_7DS-7Vd-D82OL2JP98ff7HIUzmUQNOYtItcj9uH9PkH24YQUKMyp4M0-27tWdb_meOwx8Y7YUtpBXP-PXuuI0YpLYs4S-7xbwpLEJM8KYxxC92aPavTfYwcZJHB3gFw6nYC3YkauZdQvFOnbNr0FtKH0GkA1yUoKmpW3sSdMjveue8NvRXWsJ1dXPxSy5oobSQI5jBuMv-N17edGnmI-E7j_SWkWgwOccxTQv_9OCAMK2Ciwnl1wVGSHkUEuuJkaW-_5rulnq2XxATjRPhiEPzR9TtsKNBuHUOOrhxDwVJXhzRpVw2o8_Cy6puatNdRP1BWsR3A137HI8PoEP3ljV8FYkBDhyAbDB0ihV1ZV5OHvi2CPY2QmA4LxGcpTkvy0BCKrAysfV3bvIgs6tN-wQ32XhHSLCVfkcqX7_u_1-sh7knOXFsR7XxEVojRu05lMfqme-AydceJw9Nr6k4VQec96nbBe6uXBWlKLTKER1dpGx13fOm2V53HNULbqDUUuriQiPEEf3ubngrKt9y58jdzMuwOYgifXkjkOsxqhk3gbf0M9RFBx2DGGGp5bEiZQFO6ofsFZ_2aUfGBb61y4PdohfYaxdw0Ywfi7tOl8durdZ6dmhzbDSEV1jz6R3y0dl24C97iU5o-CLnoDJ9Kp32MO0-aSSXX7nKqnRlxUtSZgjVEddzbtDkvXD5VS78y9d5RfDLou_MHEWVVMzJ4SKx16iqbTKCL1012gbwsVvJQDPsCIJmnD1nYDJvjrcQlIxKbGEQHu7QN4jP4-6QI3Ckw0HJ2ESWOFDMqW6LkJp4Twwm9EkB2I_uvpu5lbphkRWzKURXvhyVUKrrRzW6iwlDlKAZI1MXuriUftcH00o9vv2VEdKPN2jJUjzKdktw2EOYAnUk7I6Vxtawtn_hZDl4bnbYsnpKssDI6Dx4uYE0U"
+        self.captcha_token = "03AFcWeA7InPpInzinwABe65Pykga8Mg4T9GvLTXPcDrlc0eP1eNgI1gEB60Lgj4MArHFlely5VtPTyl80bJHP_Ps4b2mjC00iD21K9hG7HMn7RNntzJsNLTBVfzT97LwPA3rTMiit1CbvuD4n4kJKzRGy0s-OZWy_cHmiKJjMU1YLKRKBRjbIegd68hzYdkLrIm79ViG6MlVA-SJRVnM3LrCq4tlARrbbo-1XWZl_-N0gOyUeEoY3ixxd6Ysp8j-tPkPvZA9XAWf6DKSPxmB8vJjlB9YesaGKlapGnZfkiIhbCMvLJRfmWWkoMaurh3-9tv1F0K5vxG2bNaRvnD5NWcanw-9_U5vs-pvBNqMFvZU2ZI9TJ5jaAOWUCcNUPFEaWJBUCgmBNaX4cadLknlJ37G4pQQKQubAXyvXxd2A-dRVl7l5UgXsOAe2gLwA8QjzEe1WxDuejf5w93GPNPoJmqUN7_aCHenoDdtDGj51NcNnGt3gys5FzkIzUbHtxI07-a8p_lI5TazUw4KWSwbUsK5cMI6DHGdLe-y9cIM4VhVL-s5_V1RrXl4grpLVeGEcQkRqJZ8x0YsijneZdwFjiYQGZERg86jfK1Bu5bDqRPz31L7Y1xmYTr8nO4536I77_Hmh5P7rajYR_UXqwxeg2cwPsxwt3H9wgqFAYAjJ3oBo9POcnCvTPz4_5JS2b-YdNQrHHPD6EYynQ-r10Fq36cvvxXQw9ba_nN71TDB094i7kcV08HOMDkx3cxPf_ufqiRYTB2DwuXjvQSp4NV9lE7u3JIdiNpIovI9Pd2LWJ9KTR7fqtd1jUH2ODgoMKwwGjAwcfDCDKHUAUtEY-3ATs0w6rQVTLZj-3f4sg5DLqQQMxluka9Gnvazlc5cDb_Fx4vXFSIl8LEc0lOW6g8Q5crsX9tpLAxWo64od_ZycUsFTMTtma_pWc7XL3j_44bhCgGWtZQkkAG_dCU5oa4RjlKJwIdEyIfh-ZQ"
     
-    def analyse_image(self, image_byte: bytes) -> object: # list idk
+    def analyse_image(self, image_byte: bytes) -> object | int: # list idk
+        start_time = time()
         encoded_bytes = b64encode(image_byte).decode("utf-8")
         
         payload = {
@@ -45,29 +47,34 @@ class Recognition:
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
             }
         )
-        
+        # print(response.text) # Debug
         if "response" not in response.text:
             return "No response! Please refresh the IP/captcha"
 
         r = response.json()["responses"]
-        label_annotation = r[0]["labelAnnotations"]
-        object_annotation = r[0]["localizedObjectAnnotations"]
+        return_dict = {}
+        label_annotation, object_annotation = [], []
+        if "labelAnnotations" in response.text: # some photos doesnt return object annotation
+            label_annotation = r[0]["labelAnnotations"]
+            if len(label_annotation) != 0:
+                return_dict["label"] = {
+                    "item_name": label_annotation[0]["description"], 
+                    "item_score": round(label_annotation[0]["score"] * 100, 2)
+                }
+        if "localizedObjectAnnotations" in response.text:
+            object_annotation = r[0]["localizedObjectAnnotations"]
+            if len(object_annotation) != 0:
+                return_dict["label"] = {
+                    "item_name": object_annotation[0]["name"], 
+                    "item_score": round(object_annotation[0]["score"] * 100, 2)
+                }
 
-        if len(label_annotation) == 0 or len(object_annotation) == 0:
-            return "An error has occured"
+        # if len(label_annotation) == 0 or len(object_annotation) == 0:
+        #     return "An error has occured"
 
-        return {
-            "label": {
-                "item_name": label_annotation[0]["description"], 
-                "item_score": round(label_annotation[0]["score"] * 100, 2)
-            },
-            "object": {
-                "item_name": object_annotation[0]["name"], 
-                "item_score": round(object_annotation[0]["score"] * 100, 2)
-            }
-        }
+        return return_dict, round(time() - start_time, 2)
 
 if __name__ == "__main__":
     test_image = get("https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MA7F4?wid=2000&hei=2000&fmt=jpeg&qlt=90&.v=1723162550519").content
-    anaylsed_data = Recognition().analyse_image(test_image)
+    anaylsed_data, _ = Recognition().analyse_image(test_image)
     print(anaylsed_data)
