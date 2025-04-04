@@ -1,0 +1,55 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Free Web tutorials">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="John Doe">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS | Electronic Scanned</title> <!--Change icon please bro-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="./static/icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        .scanner-div {
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+
+        .return-btn {
+            padding: 10px 20px;
+            font-size: 50px;
+            color: white;
+            background-color: #2ecc71; 
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .return-btn:hover {
+            background-color: #27ae60; /* transaction only avaliable on web */
+        }
+    </style>
+</head>    
+<body>
+    <div class="icon-bar">
+        <a class="active" href="#"><i class="fa fa-home"></i></a> 
+        <a href="#"><i class="fa fa-search"></i></a> 
+        <a href="/about"><i class="fa fa-info"></i></a>
+    </div>
+    <div class="scanner-div">
+        <img style="width: 30%; height: auto; margin-top: 20px;" src="../static/icon.png">
+        <h1>Electronic Appliances: {{ electronic }}</h1>
+        <h3>When and How does it consumes energy?</h3>
+        <p>{{i1}}</p>
+        <h3 style="margin: 0;">What can we do to reduce pollution?</h3>
+        <h3 style="margin: 0;">And how can we conserve energy for our planet?</h3>
+        
+        <ul>
+            <li>{{x1}}</li>
+            <li>{{x2}}</li>
+            <li>{{x3}}</li>
+        </ul>
+        <button class="return-btn" onclick="window.location.href='/'">Home</button>
+    </div>
+</body>
+</html>

@@ -47,34 +47,62 @@ class Recognition:
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
             }
         )
-        # print(response.text) # Debug
-        if "response" not in response.text:
-            return "No response! Please refresh the IP/captcha"
+        print(response.text) # Debug
+        if "Bad image data" in response.text:
+            return "Image has too many obstacles, please rescan", False, round(time() - start_time, 2)
+        elif "response" not in response.text:
+            return "No response! Please refresh the IP/captcha", False, round(time() - start_time, 2)
 
         r = response.json()["responses"]
-        return_dict = {}
+        return_dict = []
         label_annotation, object_annotation = [], []
         if "labelAnnotations" in response.text: # some photos doesnt return object annotation
             label_annotation = r[0]["labelAnnotations"]
             if len(label_annotation) != 0:
-                return_dict["label"] = {
+                return_dict.append({
                     "item_name": label_annotation[0]["description"], 
                     "item_score": round(label_annotation[0]["score"] * 100, 2)
-                }
+                })
         if "localizedObjectAnnotations" in response.text:
             object_annotation = r[0]["localizedObjectAnnotations"]
             if len(object_annotation) != 0:
-                return_dict["label"] = {
+                return_dict.append({
                     "item_name": object_annotation[0]["name"], 
                     "item_score": round(object_annotation[0]["score"] * 100, 2)
-                }
+                })
 
+        predicted_object, is_electronic = Recognition.fetch_electronics(return_dict)
         # if len(label_annotation) == 0 or len(object_annotation) == 0:
         #     return "An error has occured"
 
-        return return_dict, round(time() - start_time, 2)
+        return predicted_object, is_electronic, round(time() - start_time, 2)
+
+    @staticmethod
+    def fetch_electronics(lists: list) -> str | bool: # do microwave
+        item_name, temp_item = "", ""
+        for sub_list in lists:
+            temp_item = sub_list["item_name"].lower()
+            if "mobile" in temp_item or "phone" in temp_item or "apple" in temp_item or "mobile phone" in temp_item:
+                item_name = "mobile"
+            elif "laptop" in temp_item or "pc" in temp_item or "computer" in temp_item or "macbook" in temp_item:
+                item_name = "computer"
+            elif "television" in temp_item or "display device" in temp_item:
+                item_name = "television"
+            elif "surveillance camera" in temp_item or "cctv" in temp_item or "cameras & optics" in temp_item or "dashcam" in temp_item:
+                item_name = "security_camera"
+            elif "projector" in temp_item:
+                item_name = "projector"
+            elif "Home appliance" in temp_item: # air condition
+                item_name = "appliance"
+            elif "microwave" in temp_item or "oven" in temp_item:
+                item_name = "microwave"
+        is_electronic = item_name != ""
+        if is_electronic != True:
+            item_name = temp_item
+        return item_name, is_electronic
 
 if __name__ == "__main__":
-    test_image = get("https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MA7F4?wid=2000&hei=2000&fmt=jpeg&qlt=90&.v=1723162550519").content
+    test_image = get("https://lh3.google.com/u/0/d/12j7RE0LBj5f4056W2zC8xMiZRrKacmgP=w1990-h1572-iv1").content
     anaylsed_data, _ = Recognition().analyse_image(test_image)
     print(anaylsed_data)
+    print(Recognition().fetch_electronics(anaylsed_data))

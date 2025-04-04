@@ -21,8 +21,64 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 reco_cli = Recognition()
 solve_cli = Solver()
 templates = Jinja2Templates(directory="pages")
-
-
+consumption_table = {
+    "mobile": {
+        "ec": "Mainly during charging and using data services.",
+        "rt": [
+            "Use power-saving modes.",
+            "Limit background app activity.",
+            "Reduce screen brightness and timeout duration.",
+        ]
+    },
+    "computer": {
+        "ec": "Desktops consume more than laptops due to larger components.",
+        "rt": [
+            "Use energy-efficient models (look for ENERGY STAR ratings).",
+            "Enable sleep mode when inactive.",
+            "Unplug chargers and peripherals when not in use.",
+        ]
+    },
+    "microwave": {
+        "ec": "Significant energy use when in operation.",
+        "rt": [
+            "Use for multiple items at once to maximize efficiency.",
+            "Avoid opening the door frequently during cooking.",
+            "Use appropriate container sizes to reduce cooking time."
+        ]
+    },
+    "appliance": {
+        "ec": "One of the largest energy consumers, especially in summer.",
+        "rt": [
+            "Regular maintenance, including cleaning filters.",
+            "Set the thermostat higher when not home.",
+            "Use fans to circulate cool air.",
+        ]
+    },
+    "security_camera": {
+        "ec": "Continuous operation contributes to energy usage.",
+        "rt": [
+            "Use motion-detection features to limit recording time.",
+            "Switch to energy-efficient models.",
+            "Schedule specific times for recording rather than continuous."
+        ]
+    },
+    "projector": {
+        "ec": "Can have a high energy draw depending on type and settings.",
+        "rt": [
+            "Use eco-mode settings.",
+            "Turn off when not in use.",
+            "Keep lenses clean to maintain efficiency."
+        ]
+    },
+    "television": {
+        "ec": "Considerable energy usage, especially larger models.",
+        "rt": [
+            "Use energy-saving modes.",
+            "Lower brightness and contrast settings.",
+            "Unplug or use smart plugs to turn off completely when not in use."
+        ]
+    }
+}
 class Image(BaseModel):  
     image_data: bytes # i patched this, json not required, use form data instead 
 
@@ -47,21 +103,53 @@ async def index_page(request: Request):
         request=request, name="index.html"
     )
 
+@app.get("/about", response_class = HTMLResponse)
+async def about_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="about.html"
+    )
+
+# no time to work on frontend to deal with response
+@app.get("/404/", response_class = HTMLResponse)
+async def about_page(request: Request, predicted_item: str = "Unknown"):
+    return templates.TemplateResponse(
+        request=request, name="notfound.html", context={"pi": predicted_item}
+    )
+
+@app.get("/electronic", response_class = HTMLResponse)
+async def about_page(request: Request, electronic: str):
+    i1, x1, x2, x3 = "", "", "", ""
+    try:
+        xyz = consumption_table[electronic]
+        i1, x1, x2, x3 = xyz["ec"], xyz["rt"][0], xyz["rt"][1], xyz["rt"][2]
+    except:
+        print("Pass")
+    return templates.TemplateResponse(
+        request=request, name="electronic.html", context={"electronic": electronic, "i1": i1, "x1": x1, "x2": x2, "x3": x3},
+    )
+
+@app.get("/history", response_class = HTMLResponse)
+async def history_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="history.html"
+    )
+
+
 @app.post("/api/upload")
 async def upload_image(image: UploadFile = File(...)) -> object:
     # status_code=status.HTTP_303_SEE_OTHER
-    try:
+    # try:
         image_byte = await image.read()
-        data = reco_cli.analyse_image(image_byte)
+        data, is_electronic, time_taken = reco_cli.analyse_image(image_byte)
         return await response_json(
             "success",
-            data = data
+            data = [data, is_electronic, time_taken]
         )
-    except Exception as e:
-        return await response_json(
-            "error",
-            "Exception: " + str(e)
-        )
+    # except Exception as e:
+    #     return await response_json(
+    #         "error",
+    #         "Exception: " + str(e)
+    #     )
     
 @app.get("/api/solve")
 async def solve_captcha() -> object:
@@ -72,7 +160,7 @@ async def solve_captcha() -> object:
             id = solve_cli.create_task()
             token = solve_cli.get_task_result(id)
 
-        reco_cli.captcha_token = token
+        reco_cli.captcha_token = token # update the captcha token (do it once a day or if blank response occurs)
         return await response_json(
             "success",
             data = token
