@@ -3,7 +3,6 @@ from time import sleep
 
 class Solver:
     def __init__(self, client: Client = Client(http2 = True, timeout = 10)):
-        self.key = "CAP-E395B29291270DD930E160E43EE1F03B" # don't use it or i hack ur computer
         self.client = client
         self.headers = {
             "content-type": "application/json"
