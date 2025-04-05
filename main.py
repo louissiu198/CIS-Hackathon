@@ -172,7 +172,7 @@ async def solve_captcha() -> object:
         )
 
 if __name__ == "__main__":
-    run(app, host="0.0.0.0", port=1234)
+    run(app, host="localhost", port=1234)
 
 """
 6 underwear
